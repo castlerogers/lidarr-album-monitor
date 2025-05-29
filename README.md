@@ -78,3 +78,7 @@ This project includes a development container configuration for VS Code. To use 
 
 - [Lidarr Issue #3778: Monitor New Albums :: No longer working](https://github.com/Lidarr/Lidarr/issues/3778)
 - This implementation is based on the workaround discussed in the issue
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
