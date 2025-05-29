@@ -74,6 +74,31 @@ This project includes a development container configuration for VS Code. To use 
 3. Open the project folder in VS Code
 4. Click "Reopen in Container" when prompted, or run the "Remote-Containers: Reopen in Container" command
 
+## Releases and Docker Images
+
+Docker images are automatically built and published to GitHub Container Registry with semantic versioning:
+
+- `ghcr.io/OWNER/lidarr-album-monitor:latest` - Latest release version
+- `ghcr.io/OWNER/lidarr-album-monitor:1.2.3` - Specific version
+- `ghcr.io/OWNER/lidarr-album-monitor:1.2` - Latest patch version of 1.2.x
+- `ghcr.io/OWNER/lidarr-album-monitor:1` - Latest minor and patch version of 1.x.x
+
+To create a new release:
+
+1. Go to the "Actions" tab in your GitHub repository
+2. Select the "Create Release" workflow
+3. Click "Run workflow"
+4. Enter the version number (without the 'v' prefix, e.g., "1.2.3")
+5. Optionally mark it as a pre-release
+6. Click "Run workflow"
+
+This will:
+1. Create a git tag (e.g., v1.2.3)
+2. Create a GitHub Release
+3. Trigger the Docker build workflow automatically
+
+Images will be available at `ghcr.io/OWNER/lidarr-album-monitor` shortly after the release is created.
+
 ## References
 
 - [Lidarr Issue #3778: Monitor New Albums :: No longer working](https://github.com/Lidarr/Lidarr/issues/3778)
