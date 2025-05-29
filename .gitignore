@@ -1,0 +1,16 @@
+# Environment files
+.env
+**/.env
+**/.env.*
+.devcontainer/devcontainer.env
+
+# Logs
+*.log
+
+# IDE files
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.user

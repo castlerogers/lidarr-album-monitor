@@ -1,0 +1,9 @@
+.devcontainer/
+.git/
+.gitignore
+.env*
+!.env.template
+docker/
+docs/
+tests/
+README.md
