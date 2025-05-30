@@ -10,43 +10,31 @@ This script addresses this bug by periodically checking for albums released with
 
 ## Usage
 
-### Docker
+### Docker Run
 
 ```bash
-docker build -t lidarr-album-monitor .
-
 docker run -e LIDARR_BASE_URL="https://your-lidarr-instance" \
            -e LIDARR_API_KEY="your-api-key" \
            -e DAYS_TO_LOOK_BACK="60" \
+           -e INTERVAL_HOURS="24" \
            lidarr-album-monitor
 ```
 
-### Using Docker Compose
+### Docker Compose
 
-1. Create your environment file:
-   ```bash
-   # Copy the template file
-   cp .env.template .env
-   
-   # Edit the .env file with your Lidarr details
-   # Replace placeholder values with your actual configuration
-   ```
 
-2. Run the container:
-   ```bash
-   docker-compose up
-   ```
-
-### Environment Variables
-
-**Required Variables**:
-
-- `LIDARR_BASE_URL`: Your Lidarr base URL (e.g., "https://lidarr.example.com") - do not include "/api/v1" as it will be added automatically
-- `LIDARR_API_KEY`: Your Lidarr API key
-
-**Optional Variables**:
-
-- `DAYS_TO_LOOK_BACK`: Number of days to look back for recent album releases (default: 60)
+```yaml
+services:
+  lidarr-album-monitor:
+    image: ghcr.io/castlerogers/lidarr-album-monitor:latest
+    container_name: lidarr-album-monitor
+    environment:
+      - LIDARR_BASE_URL=https://lidarr.example.com  # Your Lidarr base URL (don't include "/api/v1")
+      - LIDARR_API_KEY=your-api-key                 # Your Lidarr API key
+      - DAYS_TO_LOOK_BACK=60                        # Optional: Days to look back for recent releases
+      - INTERVAL_HOURS=24                           # Optional: Hours between script executions
+    restart: unless-stopped
+```
 
 ## How It Works
 
@@ -56,6 +44,7 @@ The script uses the Lidarr API to:
 2. Filter to find albums released within the specified time period (default: last 60 days)
 3. Set these albums' "monitored" status to true
 4. Update the albums via the API
+5. When run in Docker, the script can be configured to execute at regular intervals (default: every 24 hours)
 
 This effectively works around the Lidarr issue where newly added albums aren't being properly monitored despite having the "monitor new albums" setting enabled.
 
@@ -77,7 +66,7 @@ This project includes a development container configuration for VS Code. To use 
 ## References
 
 - [Lidarr Issue #3778: Monitor New Albums :: No longer working](https://github.com/Lidarr/Lidarr/issues/3778)
-- This implementation is based on the workaround discussed in the issue
+- Many thanks to @aevrard and @bjaudon for the framework for the script!
 
 ## License
 

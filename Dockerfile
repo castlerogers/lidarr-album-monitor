@@ -6,5 +6,8 @@ WORKDIR /app
 # Copy the module and script to the container
 COPY src/ ./src/
 
-# Set the script as the entrypoint
-ENTRYPOINT ["pwsh", "-File", "src/Update-LidarrAlbumMonitoring.ps1"]
+# Make the wrapper script executable
+RUN chmod +x /app/src/run-with-interval.sh
+
+# Set the wrapper script as the entrypoint
+ENTRYPOINT ["/app/src/run-with-interval.sh"]

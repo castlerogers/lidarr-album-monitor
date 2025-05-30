@@ -1,6 +1,6 @@
 {
     "name": "PowerShell Development",
-    "dockerFile": "../Dockerfile.dev",
+    "dockerFile": "./Dockerfile.dev",
     "customizations": {
         "vscode": {
             "extensions": [
