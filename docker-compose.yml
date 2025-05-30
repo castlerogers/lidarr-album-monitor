@@ -2,8 +2,11 @@ version: '3'
 
 services:
   lidarr-album-monitor:
-    build: .
+    image: ghcr.io/castlerogers/lidarr-album-monitor:latest
+    container_name: lidarr-album-monitor
     environment:
       - LIDARR_BASE_URL=${LIDARR_BASE_URL}
       - LIDARR_API_KEY=${LIDARR_API_KEY}
       - DAYS_TO_LOOK_BACK=${DAYS_TO_LOOK_BACK:-60}
+      - INTERVAL_HOURS=${INTERVAL_HOURS:-24}
+    restart: unless-stopped
