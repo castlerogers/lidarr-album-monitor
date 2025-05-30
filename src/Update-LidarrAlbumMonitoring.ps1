@@ -17,18 +17,24 @@ Write-Output "Connecting to Lidarr API at $lidarrApiUrl"
 Write-Output "Looking for albums released in the last $daysToLookBack days"
 
 $albumsUrl = "$lidarrApiUrl/album?apikey=$apiKey"
+$artistsUrl = "$lidarrApiUrl/artist?apikey=$apiKey"
 
-$response = Invoke-RestMethod -Uri $albumsUrl -Method Get
-$NextAlbum = $response | Where-Object { 
+$artistsResponse = Invoke-RestMethod -Uri $artistsUrl -Method Get
+$albumResponse = Invoke-RestMethod -Uri $albumsUrl -Method Get
+$nextAlbum = $albumResponse | Where-Object { 
     $_.ReleaseDate -and (Get-Date $_.ReleaseDate) -gt (Get-Date).AddDays(-$daysToLookBack)
 }
 
 $updateAlbumUrl = "$lidarrApiUrl/album/monitor?apikey=$apiKey"
-foreach ($album in $NextAlbum) {
-    $AlbumPs = [PSCustomObject]@{
-        albumIds = @($album.id)
+
+foreach ($album in $nextAlbum) {
+    $albumPs = [PSCustomObject]@{
+        albumIds  = @($album.id)
         monitored = $true
     }
-    $AlbumJson = $AlbumPs | ConvertTo-Json -Depth 2
-    Invoke-RestMethod -Uri $updateAlbumUrl -Method Put -Body $AlbumJson -ContentType "application/json"
+    $albumJson = $albumPs | ConvertTo-Json -Depth 2
+    $artistMatch = $artistsResponse.Where({ $_.id -eq $album.artist.id }, 'First')
+    if (($artistMatch.monitorNewItems -ne "none") -and ($artistMatch.monitored -eq $true)) {
+        Invoke-RestMethod -Uri $updateAlbumUrl -Method Put -Body $albumJson -ContentType "application/json"
+    }
 }
