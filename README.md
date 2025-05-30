@@ -66,7 +66,7 @@ This project includes a development container configuration for VS Code. To use 
 ## References
 
 - [Lidarr Issue #3778: Monitor New Albums :: No longer working](https://github.com/Lidarr/Lidarr/issues/3778)
-- Many thanks to @aevrard and @bjaudon for the framework for the script!
+- Many thanks to [@aevrard](https://github.com/aevrard) and [@bjaudon](https://github.com/bjaudon) for the framework for the script!
 
 ## License
 
