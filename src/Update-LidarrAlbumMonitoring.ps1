@@ -33,7 +33,7 @@ foreach ($album in $nextAlbum) {
         monitored = $true
     }
     $albumJson = $albumPs | ConvertTo-Json -Depth 2
-    $artistMatch = $artistsResponse | Where-Object { $_.id -eq $album.artist.id }
+    $artistMatch = $artistsResponse.Where({ $_.id -eq $album.artist.id }, 'First')
     if (($artistMatch.monitorNewItems -ne "none") -and ($artistMatch.monitored -eq $true)) {
         Invoke-RestMethod -Uri $updateAlbumUrl -Method Put -Body $albumJson -ContentType "application/json"
     }
