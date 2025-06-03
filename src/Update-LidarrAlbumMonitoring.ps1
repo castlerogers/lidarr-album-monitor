@@ -1,5 +1,6 @@
 # Get configuration from environment variables
-$lidarrBaseUrl = $env:LIDARR_BASE_URL.TrimEnd('/')
+$lidarrBaseUrl = $env:LIDARR_BASE_URL
+if ($lidarrBaseUrl) { $lidarrBaseUrl = $lidarrBaseUrl.TrimEnd('/') }
 $apiKey = $env:LIDARR_API_KEY
 # Get days to look back with default of 60 if not specified
 $daysToLookBack = if ($env:DAYS_TO_LOOK_BACK) { [int]$env:DAYS_TO_LOOK_BACK } else { 60 }
