@@ -16,25 +16,26 @@ if (-not $lidarrBaseUrl -or -not $apiKey) {
 Write-Output "Connecting to Lidarr API at $lidarrApiUrl"
 Write-Output "Looking for albums released in the last $daysToLookBack days"
 
-$albumsUrl = "$lidarrApiUrl/album?apikey=$apiKey"
-$artistsUrl = "$lidarrApiUrl/artist?apikey=$apiKey"
+# Use the calendar endpoint so Lidarr filters by release date server-side.
+# Fetching /album unfiltered returns the entire library and OOMs on large
+# libraries during JSON deserialization. includeArtist embeds the artist on
+# each album, so no separate /artist fetch is needed either.
+$startDate = (Get-Date).AddDays(-$daysToLookBack).ToString('yyyy-MM-dd')
+$endDate = (Get-Date).AddDays(1).ToString('yyyy-MM-dd')   # +1 to catch today across timezones
+$calendarUrl = "$lidarrApiUrl/calendar?apikey=$apiKey&start=$startDate&end=$endDate&unmonitored=true&includeArtist=true"
 
-$artistsResponse = Invoke-RestMethod -Uri $artistsUrl -Method Get
-$albumResponse = Invoke-RestMethod -Uri $albumsUrl -Method Get
-$nextAlbum = $albumResponse | Where-Object { 
-    $_.ReleaseDate -and (Get-Date $_.ReleaseDate) -gt (Get-Date).AddDays(-$daysToLookBack)
-}
+$recentAlbums = Invoke-RestMethod -Uri $calendarUrl -Method Get
 
 $updateAlbumUrl = "$lidarrApiUrl/album/monitor?apikey=$apiKey"
 
-foreach ($album in $nextAlbum) {
-    $albumPs = [PSCustomObject]@{
-        albumIds  = @($album.id)
-        monitored = $true
-    }
-    $albumJson = $albumPs | ConvertTo-Json -Depth 2
-    $artistMatch = $artistsResponse.Where({ $_.id -eq $album.artist.id }, 'First')
-    if (($artistMatch.monitorNewItems -ne "none") -and ($artistMatch.monitored -eq $true)) {
+foreach ($album in $recentAlbums) {
+    if ($album.monitored) { continue }
+    if (($album.artist.monitorNewItems -ne "none") -and ($album.artist.monitored -eq $true)) {
+        $albumPs = [PSCustomObject]@{
+            albumIds  = @($album.id)
+            monitored = $true
+        }
+        $albumJson = $albumPs | ConvertTo-Json -Depth 2
         Invoke-RestMethod -Uri $updateAlbumUrl -Method Put -Body $albumJson -ContentType "application/json"
     }
 }
